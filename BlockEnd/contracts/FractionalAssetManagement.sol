@@ -8,6 +8,8 @@ contract AssetBloc {
     uint public startTime;
     uint public endTime;
     uint private timeInDays;
+    uint private rentDueTime;
+    uint private timeInOneYear = 31_536_000;
 
     struct Shares {
         address walletAddress;
@@ -28,6 +30,14 @@ contract AssetBloc {
         string lastName;
         uint balanceBSC;
     }
+    struct Customer {
+        uint assetId;
+        address walletAddress;
+        string name;
+        bool paid;
+        bool canRent;
+        uint timeRented;
+    }
     struct Asset {
         uint id;
         string propertyName;
@@ -35,6 +45,7 @@ contract AssetBloc {
         uint propertyValue;
         uint sharesAvailable;
         uint sharesSold;
+        uint rentValuePerYear;
     }
     struct LockedUserFunds {
         address walletAddress;
@@ -49,10 +60,10 @@ contract AssetBloc {
     mapping(address => Shares[]) public shares;
     mapping(address => LockedUserFunds[]) public userLockedFunds;
     mapping(uint => OwnersOfAsset[]) public assetOwners;
+    mapping(uint => Customer) public customer;
 
     // Arrays
     User[] public _users;
-    Asset[] public _assets;
 
     constructor() {
         i_owner = msg.sender;
@@ -69,7 +80,7 @@ contract AssetBloc {
 
     // Functions
 
-    function addUser(
+    function addInvestor(
         string calldata firstname,
         string calldata lastname
     ) external {
@@ -78,11 +89,18 @@ contract AssetBloc {
         _users.push(User(msg.sender, firstname, lastname, 0));
     }
 
+    // Add Customer
+    function addCustomer(string calldata name) external {
+        require(!isUser(msg.sender), "User already exists");
+        customer[0] = Customer(0, msg.sender, name, false, true, 0);
+    }
+
     // Add Asset
     function addAsset(
         string calldata propertyname,
         string calldata propertyabout,
-        uint propertyvalue
+        uint propertyvalue,
+        uint rentValuePerYear
     ) external onlyOwner {
         counter++;
         assets[counter] = Asset(
@@ -91,16 +109,16 @@ contract AssetBloc {
             propertyabout,
             propertyvalue,
             100,
-            0
+            0,
+            rentValuePerYear
         );
-        //Delete
-        // _assets.push(Asset(counter, propertyname, propertyabout, propertyvalue, 100, 0));
     }
 
     function editAsset(
         uint id,
         string calldata propertyname,
-        string calldata propertyabout
+        string calldata propertyabout,
+        uint rentValuePerYear
     ) external onlyOwner {
         require(assets[id].id != 0, "Asset with the Id does not exist");
         Asset storage asset = assets[id];
@@ -108,6 +126,7 @@ contract AssetBloc {
         if (bytes(propertyname).length != 0) asset.propertyName = propertyname;
         if (bytes(propertyabout).length != 0)
             asset.propertyAbout = propertyabout;
+        assets[id].rentValuePerYear = rentValuePerYear;
     }
 
     // Buy shares
@@ -123,7 +142,6 @@ contract AssetBloc {
         uint propValue = assets[id].propertyValue;
         string memory propertyName = assets[id].propertyName;
 
-        /**TOD0 */
         uint sharesCalculatedInPercentage = calcShares(propValue, _amount);
         bool verify = false;
         for (uint i = 0; i < userShare.length; i++) {
@@ -204,12 +222,10 @@ contract AssetBloc {
         uint i;
         for (i = 0; i < userShares.length; i++) {
             if (userShares[i].assetId == id) {
-                // Reduce the value
                 totalSharesOfUser = userShares[i].shareValueInBSC;
                 require(totalSharesOfUser > amount, "Zero shares!");
                 userShares[i].shareValueInBSC -= amount;
                 sharesBought = true;
-                // Delete the shares from the array
                 break;
             }
         }
@@ -238,7 +254,7 @@ contract AssetBloc {
     // Unlock bought shares
     function unlockShares(uint id, uint amount) external onlyUser {
         endTime = block.timestamp;
-        require(startTime - endTime >= timeInDays, "Time hasn't elasped"); // Do it very well
+        require(endTime - startTime >= timeInDays, "Time hasn't elasped"); // Do it very well
         LockedUserFunds[] storage lockedShares = userLockedFunds[msg.sender];
         uint totalLockedSharesOfUser;
         uint position;
@@ -246,19 +262,16 @@ contract AssetBloc {
 
         for (uint i = 0; i < lockedShares.length; i++) {
             if (lockedShares[i].id == id) {
-                // Reduce the value
                 totalLockedSharesOfUser = lockedShares[i].fundsLocked;
                 require(totalLockedSharesOfUser > amount, "Zero shares!");
                 lockedShares[i].fundsLocked -= amount;
                 position = lockedShares[i].positionInArray;
                 sharesBought = true;
-                // Delete the shares from the array
                 break;
             }
         }
 
         if (sharesBought) {
-            /**TODO: Locked funds */
             Shares[] storage userShares = shares[msg.sender];
             userShares[position].shareValueInBSC += amount;
             uint propValue = assets[id].propertyValue;
@@ -267,8 +280,11 @@ contract AssetBloc {
         }
     }
 
-    // Disburse profit and store a percentage of funds
-    function disburseProfit(uint id) external payable onlyUser {
+    // Rent Asset and Share profit among the shareholders
+    function Rent(uint id) external payable onlyUser {
+        Customer storage assetRent = customer[id];
+        require(assetRent.canRent == true, "Asset is rented");
+        assetRent.canRent = false;
         OwnersOfAsset[] storage owners = assetOwners[id];
         for (uint i = 0; i < owners.length; i++) {
             address wallet = owners[i].owner;
@@ -276,6 +292,27 @@ contract AssetBloc {
             uint sharesInBSC = calcPercentBSC(msg.value, sharesInPercent);
             users[wallet].balanceBSC += sharesInBSC;
         }
+        assetRent.paid = true;
+        assetRent.timeRented = block.timestamp;
+    }
+
+    function rentDue(uint id) external onlyUser {
+        Customer storage assetRent = customer[id];
+        require(assetRent.canRent == false, "No owner!");
+        rentDueTime = block.timestamp;
+        require(
+            rentDueTime - assetRent.timeRented > timeInOneYear,
+            "Time still valid"
+        );
+        assetRent.paid = false;
+    }
+
+    // Email the company to kickout the occupant as the person has not paid
+    function kickOut(uint id) external onlyOwner {
+        Customer storage assetRent = customer[id];
+        require(assetRent.canRent == false, "No owner!");
+        require(assetRent.paid == false, "Customer rent still valid");
+        assetRent.canRent = true;
     }
 
     function withdraw(uint amount) external onlyUser {
