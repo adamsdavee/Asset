@@ -77,7 +77,7 @@ contract AssetBloc {
         uint indexed id,
         string propertyname,
         string propertyabout,
-        uint value,
+        uint propertyvalue,
         uint sharesavailable,
         uint sharessold,
         Status status,
@@ -87,6 +87,8 @@ contract AssetBloc {
         uint indexed id,
         string propertyname,
         string propertyabout,
+        uint propertyvalue,
+        Status status,
         uint rentValuePerYear
     );
     event CustomerAdded(address indexed wallet, string firstname);
@@ -152,7 +154,8 @@ contract AssetBloc {
         require(!isUser(msg.sender), "User already exists");
         users[msg.sender] = User(msg.sender, firstname, lastname, 0);
         _Investors.push(User(msg.sender, firstname, lastname, 0));
-        //
+
+        emit InvestorAdded(msg.sender, firstname, 0);
     }
 
     // Add Customer
@@ -160,6 +163,8 @@ contract AssetBloc {
         require(!isUser(msg.sender), "User already exists");
         customers[0] = Customer(0, msg.sender, name, false, 0);
         _Customers.push(Customer(0, msg.sender, name, false, 0));
+
+        emit CustomerAdded(msg.sender, name);
     }
 
     // Add Asset
@@ -167,6 +172,7 @@ contract AssetBloc {
         string calldata propertyname,
         string calldata propertyabout,
         uint propertyvalue,
+        Status status,
         uint rentValuePerYear
     ) external onlyOwner {
         counter++;
@@ -177,7 +183,18 @@ contract AssetBloc {
             propertyvalue,
             100,
             0,
-            Status.Available,
+            status,
+            rentValuePerYear
+        );
+
+        emit AssetAdded(
+            counter,
+            propertyname,
+            propertyabout,
+            propertyvalue,
+            100,
+            0,
+            status,
             rentValuePerYear
         );
     }
@@ -186,6 +203,8 @@ contract AssetBloc {
         uint id,
         string calldata propertyname,
         string calldata propertyabout,
+        uint propertyvalue,
+        Status status,
         uint rentValuePerYear
     ) external onlyOwner {
         require(assets[id].id != 0, "Asset with the Id does not exist");
@@ -195,6 +214,17 @@ contract AssetBloc {
         if (bytes(propertyabout).length != 0)
             asset.propertyAbout = propertyabout;
         assets[id].rentValuePerYear = rentValuePerYear;
+        assets[id].propertyValue = propertyvalue;
+        assets[id].status = status;
+
+        emit AssetEdited(
+            counter,
+            propertyname,
+            propertyabout,
+            propertyvalue,
+            status,
+            rentValuePerYear
+        );
     }
 
     // Buy shares
