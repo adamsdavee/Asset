@@ -408,7 +408,7 @@ contract AssetBloc {
         require(balance >= amount, "Insufficient funds");
 
         unchecked {
-            users[msg.sender] -= amount * (10 ** 18);
+            users[msg.sender] -= amount;
         }
         (bool success, ) = msg.sender.call{value: amount}("");
         require(success, "Transfer failed");

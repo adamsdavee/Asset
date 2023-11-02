@@ -8,8 +8,6 @@ module.exports = async ({ deployments, getNamedAccounts }) => {
 
   const chainId = network.config.chainId;
 
-  console.log(chainId);
-
   log("Deploying contract........");
   const fractionalAsset = await deploy("AssetBloc", {
     from: deployer,
