@@ -56,6 +56,7 @@ contract AssetBloc {
     mapping(uint => OwnersOfAsset[]) private assetOwners;
 
     // Arrays
+    Asset[] private assetsArray;
 
     event InvestorAdded(address indexed wallet, uint balance);
     event AssetAdded(
@@ -148,7 +149,8 @@ contract AssetBloc {
         counter++;
         propertyvalue = propertyvalue * (10 ** 18);
         rentValuePerYear = rentValuePerYear * (10 ** 18);
-        assets[counter] = Asset(
+
+        Asset memory asset = Asset(
             counter,
             propertyname,
             propertyabout,
@@ -162,6 +164,8 @@ contract AssetBloc {
             msg.sender,
             false
         );
+        assets[counter] = asset;
+        assetsArray.push(asset);
 
         emit AssetAdded(
             counter,
@@ -194,6 +198,7 @@ contract AssetBloc {
         assets[id].propertyValue = propertyvalue * (10 ** 18);
         assets[id].status = status;
 
+        assetsArray[id - 1] = asset;
         emit AssetEdited(
             counter,
             propertyname,
@@ -263,6 +268,8 @@ contract AssetBloc {
             );
         }
 
+        assetsArray[id - 1] = assetShares;
+
         emit BoughtShares(
             msg.sender,
             id,
@@ -300,6 +307,12 @@ contract AssetBloc {
                 break;
             }
         }
+
+        Asset storage assetUpdate = assets[id];
+        assetUpdate.sharesAvailable += sharesPercent;
+        assetUpdate.sharesSold -= sharesPercent;
+        assetsArray[id - 1] = assetUpdate;
+
         userShares[i].shareValueInBSC -= amount;
         userShares[i].shareValueInPercentage -= sharesPercent;
         users[msg.sender] += amount;
@@ -372,6 +385,8 @@ contract AssetBloc {
         assetToRent.rentee = msg.sender;
         assetToRent.status = Status.Inuse;
 
+        assetsArray[id - 1] = assetToRent;
+
         emit RentDepositShare(
             msg.sender,
             msg.value,
@@ -389,7 +404,8 @@ contract AssetBloc {
         require(block.timestamp > assetToRent.endTime, "Time still valid");
         assetToRent.paid = false;
 
-        // emit RentDue(id, assetToRent.paid);
+        assetsArray[id - 1] = assetToRent;
+        emit RentDue(id, block.timestamp, assetToRent.paid);
     }
 
     // Email the company who is the onlyOwner to kickout the occupant as the person has not paid
@@ -399,6 +415,7 @@ contract AssetBloc {
         require(assetToRent.paid == false, "Customer rent still valid");
         assetToRent.status = Status.Available;
 
+        assetsArray[id] = assetToRent;
         emit KickedOut(id, Status.Available);
     }
 
@@ -443,7 +460,11 @@ contract AssetBloc {
         return i_owner;
     }
 
-    function getAssets(uint id) external view returns (Asset memory) {
+    function getAllAssets() external view returns (Asset[] memory) {
+        return assetsArray;
+    }
+
+    function getAsset(uint id) external view returns (Asset memory) {
         return assets[id];
     }
 
