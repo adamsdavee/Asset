@@ -1,0 +1,76 @@
+import { AssetType } from "@/types/site";
+
+export const SHARES_DATA = [
+    {
+        walletAddress: "0xF3D03fbabd9d83417cEf83Df4B3Fa7b91A39Cf5e",
+        assetId: 1,
+        propertyName: "Julia Suites 1",
+        sharesValueInPercentage: 20,
+        sharesValueInBNB: 234,
+        locked: 10,
+        lockedTime: 1699000000,
+    },
+    {
+        walletAddress: "0xF3D03fbabd9d83417cEf83Df4B3Fa7b91A39Cf5e",
+        assetId: 2,
+        propertyName: "Julia Suites 2",
+        sharesValueInPercentage: 20,
+        sharesValueInBNB: 234,
+        locked: 10,
+        lockedTime: 1699000000,
+    },
+    {
+        walletAddress: "0xF3D03fbabd9d83417cEf83Df4B3Fa7b91A39Cf5e",
+        assetId: 3,
+        propertyName: "Julia Suites 3",
+        sharesValueInPercentage: 20,
+        sharesValueInBNB: 234,
+        locked: 10,
+        lockedTime: 1699000000,
+    }
+]
+
+export const ASSETS_DATA: AssetType[] = [
+    {
+        id: 1,
+        propertyName: "Julia Suites 1",
+        propertyAbout: "Description:\nAre you looking for the perfect place to call home? Look no further! We have a cozy and inviting room available for rent in our charming house located in a peaceful and well-connected neighborhood.\n\n**Key Features:**\n\n**Location:** Our home is situated in a safe and friendly neighborhood, just a short walk from public transportation, local shops, and beautiful parks. Commuting to work or exploring the city is a breeze.",
+        propertyValue: 10,
+        sharesAvailable: 100,
+        sharesSold: 0,
+        status: 2,
+        rentValuePerYear: 1,
+        startTime: 1698748973,
+        endTime: 1699000000,
+        rentee: "0xF3D03fbabd9d83417cEf83Df4B3Fa7b91A39Cf5e",
+        paid: false,
+    },
+    {
+        id: 2,
+        propertyName: "Julia Suites 2",
+        propertyAbout: "A place like nowhere",
+        propertyValue: 10,
+        sharesAvailable: 100,
+        sharesSold: 0,
+        status: 2,
+        rentValuePerYear: 1,
+        startTime: 1698748973,
+        endTime: 1699000000,
+        rentee: "",
+        paid: false,
+    },
+    {
+        id: 3,
+        propertyName: "Julia Suites 3",
+        propertyAbout: "A place like nowhere",
+        propertyValue: 10,
+        sharesAvailable: 100,
+        sharesSold: 0,
+        status: 2,
+        rentValuePerYear: 1,
+        startTime: 1698748973,
+        endTime: 1699000000,
+        rentee: "",
+        paid: false,
+    },
+]
