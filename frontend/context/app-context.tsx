@@ -75,7 +75,7 @@ export const AppContextProvider = ({ children }: AppProviderPropTypes) => {
   const setup = async () => {
     if (
       typeof window !== "undefined" &&
-      typeof window.ethereum !== "undefined"
+      typeof (window as any).ethereum !== "undefined"
     ) {
       const provider: ethers.BrowserProvider = new ethers.BrowserProvider(
         window.ethereum!
