@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState }from 'react'
 import AppContext from '@/context/app-context';
 import NotConnected from './not-connected';
+import { Contract } from 'ethers';
 
 interface propTypes {
      assetId: number;
@@ -57,7 +58,7 @@ const [buyOpen, setBuyOpen] = useState(false)
     if (contract) {
       return
     }
-      const response = await contract!.connect(signer!).rentShare()
+      const response = await (contract!.connect(signer!) as Contract).rentShare()
       console.log({response})
   }
 
@@ -73,10 +74,10 @@ const [buyOpen, setBuyOpen] = useState(false)
     if (contract) {
       return
     }
-      const response = await contract!.connect(signer!).buyShares(assetId, buyAmount)
+      const response = await (contract!.connect(signer!) as Contract).buyShares(assetId, buyAmount)
 
       console.log({response})
-      setBuyAmount("")
+      setBuyAmount(0)
       setBuyOpen(false)
   }
 

@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 import AppContext, { toWei } from '@/context/app-context';
-
+import { Contract } from 'ethers';
 const lorem = `Fully furnished house available for monthly rent
 
 Listing offers;
@@ -76,7 +76,7 @@ const CreateAsset = () => {
 
         console.log({contract})
 
-        const response = await contract!.connect(signer!).addAsset!(propertyName, aboutText, propertyValue, 2,rentPerYear)
+        const response = await (contract!.connect(signer!) as Contract).addAsset!(propertyName, aboutText, propertyValue, 2,rentPerYear)
 
 
         console.log(response)

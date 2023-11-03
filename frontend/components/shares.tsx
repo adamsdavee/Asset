@@ -19,7 +19,7 @@ const Shares = ({shares}: propTypes) => {
             assetId,
             propertyName,
             sharesValueInPercentage,
-            sharesValueInBSC,
+            sharesValueInBNB,
             locked,
             lockedTime,
         } = share
@@ -29,7 +29,7 @@ const Shares = ({shares}: propTypes) => {
           assetId={assetId}
           propertyName={propertyName}
           sharesValueInPercentage={sharesValueInPercentage}
-          sharesValueInBSC={sharesValueInBSC}
+          sharesValueInBNB={sharesValueInBNB}
           locked={locked}
           lockedTime={lockedTime}
             

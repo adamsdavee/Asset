@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState }from 'react'
 import AppContext from '@/context/app-context';
+import { Contract } from 'ethers';
 
 interface propTypes {
      assetId: number;
@@ -32,7 +33,7 @@ const [time, setTime] = useState(0)
     if (contract) {
       return
     }
-      const response = await contract!.connect(signer!).buyShares(assetId, amount)
+      const response = await (contract!.connect(signer!) as Contract).buyShares(assetId, amount)
 
       console.log({response})
       setAmount(0)
@@ -42,7 +43,7 @@ const [time, setTime] = useState(0)
     if (contract) {
       return
     }
-      const response = await contract!.connect(signer!).sellShares(assetId, amount)
+      const response = await (contract!.connect(signer!) as Contract).sellShares(assetId, amount)
 
       console.log({response})
       setAmount(0)
@@ -52,7 +53,7 @@ const [time, setTime] = useState(0)
     if (contract) {
       return
     }
-      const response = await contract!.connect(signer!).lockShares(assetId, amount, time)
+      const response = await (contract!.connect(signer!) as Contract).lockShares(assetId, amount, time)
 
       console.log({response})
       setAmount(0)
@@ -63,7 +64,7 @@ const [time, setTime] = useState(0)
     if (contract) {
       return
     }
-      const response = await contract!.connect(signer!).unlockShares(assetId)
+      const response = await (contract!.connect(signer!) as Contract).unlockShares(assetId)
 
       console.log({response})
       setAmount(0)
@@ -89,7 +90,7 @@ const [time, setTime] = useState(0)
     const {
         walletAddress,
         sharesValueInPercentage,
-        sharesValueInBSC,
+        sharesValueInBNB,
         locked,
         lockedTime,
     } = share
@@ -133,7 +134,7 @@ const [time, setTime] = useState(0)
                 </div>
 
                 <div className='shadow-md rounded-lg p-4 text-center'>
-                    Your share is <br/><span className='text-2xl font-bold'>{sharesValueInBSC} BNB</span>
+                    Your share is <br/><span className='text-2xl font-bold'>{sharesValueInBNB} BNB</span>
                     <br/>
                      worth.
                 </div>

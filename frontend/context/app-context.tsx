@@ -3,6 +3,7 @@ import contractArtifact from "@/config/utils/AssetBloc.json";
 import { ethers } from "ethers";
 import { ASSETS_DATA, SHARES_DATA } from "@/config/test-data";
 import { AssetType, SharesType } from "@/types/site";
+import { Contract } from "ethers";
 
 const CONTRACT_ADDRESS = "0x35eBcBE067d77915C27476ff24ab779B8fC3025e";
 const contractABI = contractArtifact.abi
@@ -100,7 +101,7 @@ export const AppContextProvider = ({ children }: AppProviderPropTypes) => {
   }
 
   const getDeposit = async () => {
-    const deposit = await contract!.connect(signer!).getUserBalance()
+    const deposit = await (contract!.connect(signer!) as Contract).getUserBalance()
     setDeposit(Number(bigIntToString(deposit)))
   }
 
@@ -121,7 +122,7 @@ export const AppContextProvider = ({ children }: AppProviderPropTypes) => {
       return
     }
    
-    let assets = await contract!.connect(signer!).getAllAssets()
+    let assets = await (contract!.connect(signer!) as Contract).getAllAssets()
     setAssets(ASSETS_DATA)
 
     
