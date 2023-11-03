@@ -78,7 +78,7 @@ export const AppContextProvider = ({ children }: AppProviderPropTypes) => {
       typeof (window as any).ethereum !== "undefined"
     ) {
       const provider: ethers.BrowserProvider = new ethers.BrowserProvider(
-        window.ethereum!
+        (window as any).ethereum!
       );
       // const provider: ethers.JsonRpcProvider = new ethers.JsonRpcProvider()
       setProvider(provider);
