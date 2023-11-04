@@ -17,7 +17,7 @@
 AssetBloc is a blockchain powered platform on the BNB Chain that enables users to buy shareof realworld assets and rent properties all using crypto currency.
 
 ### Illustrations
-![Website Hompage](./asset-bloc.png)
+![Website Hompage](./assetbloc.png)
 
 
 ### **Technologies**
@@ -27,6 +27,7 @@ AssetBloc is a blockchain powered platform on the BNB Chain that enables users t
 - Hardhat
 - Ethers.js
 - Solidity
+
 **Frontend**
 - Typescipt
 - Next.js
